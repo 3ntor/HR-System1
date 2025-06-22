@@ -1,0 +1,462 @@
+.whatsapp-connection-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.connection-container {
+    max-width: 500px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.connection-header {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    position: relative;
+}
+
+.back-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.back-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-2px);
+}
+
+.connection-header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.status-card {
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.status-icon {
+    margin-bottom: 20px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-emoji {
+    font-size: 60px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #25D366;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.status-message {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.step {
+    flex: 1;
+    padding: 8px 4px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #6c757d;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.step.active {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    border-color: #25D366;
+    transform: scale(1.05);
+}
+
+.qr-display {
+    padding: 30px;
+    text-align: center;
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.qr-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.qr-image {
+    width: 250px;
+    height: 250px;
+    border: 8px solid #25D366;
+    border-radius: 16px;
+    background: white;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(37, 211, 102, 0.2);
+    transition: all 0.3s ease;
+}
+
+.qr-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(37, 211, 102, 0.3);
+}
+
+.qr-instructions {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 12px;
+    text-align: right;
+    max-width: 280px;
+}
+
+.qr-instructions h3 {
+    margin: 0 0 15px 0;
+    color: #25D366;
+    font-size: 16px;
+}
+
+.qr-instructions ol {
+    margin: 0;
+    padding-right: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.qr-instructions li {
+    margin-bottom: 8px;
+}
+
+.qr-metadata {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e8f5e8;
+    border-radius: 8px;
+    border-right: 4px solid #25D366;
+}
+
+.qr-metadata small {
+    color: #128C7E;
+    font-weight: 500;
+}
+
+.action-buttons {
+    padding: 20px 30px 30px;
+    text-align: center;
+}
+
+.btn {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+    min-width: 120px;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-large {
+    padding: 16px 32px;
+    font-size: 18px;
+    min-width: 200px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.btn-warning:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.debug-info {
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.debug-info details {
+    cursor: pointer;
+}
+
+.debug-info summary {
+    font-weight: 600;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.debug-info pre {
+    background: #333;
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    overflow-x: auto;
+    margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .whatsapp-connection-page {
+        padding: 10px;
+    }
+    
+    .connection-container {
+        max-width: 100%;
+        border-radius: 16px;
+    }
+    
+    .connection-header {
+        padding: 15px;
+    }
+    
+    .connection-header h1 {
+        font-size: 20px;
+    }
+    
+    .status-card {
+        padding: 20px;
+    }
+    
+    .status-emoji {
+        font-size: 50px;
+    }
+    
+    .spinner {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .status-message {
+        font-size: 16px;
+    }
+    
+    .progress-steps {
+        gap: 5px;
+    }
+    
+    .step {
+        padding: 6px 2px;
+        font-size: 10px;
+    }
+    
+    .qr-display {
+        padding: 20px;
+    }
+    
+    .qr-image {
+        width: 200px;
+        height: 200px;
+        border-width: 6px;
+    }
+    
+    .qr-instructions {
+        max-width: 100%;
+        padding: 15px;
+    }
+    
+    .qr-instructions h3 {
+        font-size: 14px;
+    }
+    
+    .qr-instructions ol {
+        font-size: 13px;
+    }
+    
+    .action-buttons {
+        padding: 15px 20px 20px;
+    }
+    
+    .btn-large {
+        padding: 14px 24px;
+        font-size: 16px;
+        min-width: 160px;
+    }
+}
+
+/* Animation للحالات المختلفة */
+.status-card.error .status-emoji {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.status-card.connected .status-emoji {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* تحسينات الأداء */
+.qr-image,
+.btn,
+.step {
+    will-change: transform;
+}
+
+/* تحسين تجربة اللمس */
+@media (hover: none) and (pointer: coarse) {
+    .btn:hover {
+        transform: none;
+    }
+    
+    .qr-image:hover {
+        transform: none;
+    }
+}
+
+/* أزرار إضافية */
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+.button-group {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.button-group .btn {
+    flex: 1;
+    min-width: 120px;
+    max-width: 200px;
+}
+
+@media (max-width: 600px) {
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .button-group .btn {
+        flex: none;
+        max-width: none;
+        width: 100%;
+    }
+} 

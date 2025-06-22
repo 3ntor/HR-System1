@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تسجيل الدخول</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border-left: 4px solid #007bff;
+        }
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border-left-color: #dc3545;
+            color: #721c24;
+        }
+        pre {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        input {
+            width: 200px;
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 اختبار تسجيل الدخول - تشخيص مشكلة 401</h1>
+        
+        <div>
+            <h3>بيانات تسجيل الدخول:</h3>
+            <input type="text" id="username" value="admin" placeholder="اسم المستخدم">
+            <input type="password" id="password" value="admin123" placeholder="كلمة المرور">
+        </div>
+
+        <div>
+            <button onclick="testBackendHealth()">🔍 فحص حالة الخادم الخلفي</button>
+            <button onclick="testDebugEndpoint()">🔬 تشخيص شامل للنظام</button>
+            <button onclick="testLogin()">🔐 اختبار تسجيل الدخول</button>
+            <button onclick="createToken()">🔑 إنشاء توكن يدوي</button>
+            <button onclick="clearStorage()">🗑️ مسح البيانات المحفوظة</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        const resultsDiv = document.getElementById('results');
+        const apiUrl = 'http://localhost:5001/api';
+
+        function addResult(title, content, isSuccess = true) {
+            const div = document.createElement('div');
+            div.className = `result ${isSuccess ? 'success' : 'error'}`;
+            div.innerHTML = `
+                <h4>${title}</h4>
+                <pre>${typeof content === 'object' ? JSON.stringify(content, null, 2) : content}</pre>
+            `;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        async function testBackendHealth() {
+            try {
+                addResult('🔍 فحص حالة الخادم...', 'جاري الاتصال...', true);
+                
+                const response = await fetch(`${apiUrl}/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ الخادم الخلفي يعمل بنجاح', data, true);
+                } else {
+                    addResult('❌ مشكلة في الخادم الخلفي', `Status: ${response.status} - ${response.statusText}`, false);
+                }
+            } catch (error) {
+                addResult('❌ فشل الاتصال بالخادم الخلفي', error.message, false);
+            }
+        }
+
+        async function testDebugEndpoint() {
+            try {
+                addResult('🔬 تشخيص شامل للنظام...', 'جاري فحص جميع المكونات...', true);
+                
+                const response = await fetch(`${apiUrl}/auth/debug`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    addResult('✅ تشخيص شامل للنظام', data, true);
+                    
+                    // تحليل النتائج
+                    if (!data.database.connected) {
+                        addResult('⚠️ تحذير', 'قاعدة البيانات غير متصلة', false);
+                    }
+                    if (!data.database.adminExists) {
+                        addResult('⚠️ تحذير', 'مستخدم Admin غير موجود', false);
+                    }
+                    if (!data.jwt.testPassed) {
+                        addResult('⚠️ تحذير', 'اختبار JWT فشل', false);
+                    }
+                } else {
+                    addResult('❌ فشل التشخيص الشامل', `Status: ${response.status} - ${response.statusText}`, false);
+                }
+            } catch (error) {
+                addResult('❌ خطأ في التشخيص الشامل', error.message, false);
+            }
+        }
+
+        async function testLogin() {
+            try {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                addResult('🔐 محاولة تسجيل الدخول...', `اسم المستخدم: ${username}`, true);
+
+                const response = await fetch(`${apiUrl}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // حفظ التوكن
+                    localStorage.setItem('token', data.data.token);
+                    localStorage.setItem('user', JSON.stringify(data.data.user));
+                    
+                    addResult('✅ تسجيل الدخول نجح!', {
+                        message: data.message,
+                        user: data.data.user,
+                        token: data.data.token.substring(0, 50) + '...'
+                    }, true);
+                    
+                    // اختبار التوكن
+                    setTimeout(testTokenVerification, 1000);
+                } else {
+                    addResult('❌ فشل تسجيل الدخول', {
+                        status: response.status,
+                        message: data.message || 'خطأ غير معروف',
+                        details: data.details
+                    }, false);
+                }
+            } catch (error) {
+                addResult('❌ خطأ في تسجيل الدخول', error.message, false);
+            }
+        }
+
+        async function testTokenVerification() {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    addResult('❌ لا يوجد توكن للاختبار', 'يجب تسجيل الدخول أولاً', false);
+                    return;
+                }
+
+                addResult('🔍 اختبار صحة التوكن...', 'جاري التحقق...', true);
+
+                const response = await fetch(`${apiUrl}/auth/verify`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    addResult('✅ التوكن صحيح!', {
+                        message: data.message,
+                        user: data.data.user
+                    }, true);
+                    
+                    // اختبار API endpoint
+                    setTimeout(testClientsAPI, 1000);
+                } else {
+                    addResult('❌ التوكن غير صالح', {
+                        status: response.status,
+                        message: data.message
+                    }, false);
+                }
+            } catch (error) {
+                addResult('❌ خطأ في التحقق من التوكن', error.message, false);
+            }
+        }
+
+        async function testClientsAPI() {
+            try {
+                const token = localStorage.getItem('token');
+                
+                addResult('🔍 اختبار API العملاء...', 'جاري الاختبار...', true);
+
+                const response = await fetch(`${apiUrl}/clients`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    addResult('✅ API العملاء يعمل!', {
+                        message: 'تم الوصول بنجاح',
+                        dataCount: Array.isArray(data.data) ? data.data.length : 'غير محدد'
+                    }, true);
+                } else {
+                    addResult('❌ API العملاء فشل', {
+                        status: response.status,
+                        message: data.message,
+                        errorCode: data.errorCode
+                    }, false);
+                }
+            } catch (error) {
+                addResult('❌ خطأ في API العملاء', error.message, false);
+            }
+        }
+
+        function createToken() {
+            // توكن تجريبي مؤقت (للاختبار فقط)
+            const demoToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjUwN2YxZjc3YmNmODZjZDc5OTQzOTAxMSIsInVzZXJuYW1lIjoiYWRtaW4iLCJyb2xlIjoiYWRtaW4iLCJlbWFpbCI6ImFkbWluQGNvbXBhbnkuY29tIiwiaWF0IjoxNzM0NzEzMDAwLCJleHAiOjE3MzQ3OTk0MDB9.demo_token_for_testing';
+            const demoUser = {
+                id: '507f1f77bcf86cd799439011',
+                username: 'admin',
+                role: 'admin',
+                email: 'admin@company.com'
+            };
+
+            localStorage.setItem('token', demoToken);
+            localStorage.setItem('user', JSON.stringify(demoUser));
+
+            addResult('🔑 تم إنشاء توكن تجريبي', {
+                message: 'تم حفظ توكن تجريبي في localStorage',
+                user: demoUser,
+                note: 'هذا للاختبار فقط - قد لا يعمل مع الخادم الحقيقي'
+            }, true);
+        }
+
+        function clearStorage() {
+            localStorage.clear();
+            addResult('🗑️ تم مسح البيانات', 'تم مسح جميع البيانات المحفوظة في localStorage', true);
+        }
+
+        // تشغيل اختبار أولي عند تحميل الصفحة
+        window.onload = function() {
+            addResult('🚀 أهلاً بك في صفحة التشخيص', 'استخدم الأزرار أعلاه لتشخيص مشكلة 401 Unauthorized', true);
+        };
+    </script>
+</body>
+</html> 

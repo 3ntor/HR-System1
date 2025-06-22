@@ -1,0 +1,425 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* تأثير الشعاع المتحرك */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%) skewX(12deg);
+  }
+  100% {
+    transform: translateX(300%) skewX(12deg);
+  }
+}
+
+/* Theme Transition - تطبيق الثيم بسلاسة */
+html {
+  transition: none; /* منع الانتقال عند التحميل الأولي */
+}
+
+html.loaded {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* منع الوميض عند تحميل الصفحة */
+@media (prefers-color-scheme: dark) {
+  html:not(.dark) {
+    background-color: #111827; /* لون خلفية مؤقت للوضع المظلم */
+  }
+}
+
+/* Header Styles Integration */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 84% 4.9%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221.2 83.2% 53.3%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 94.1%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* RTL Specific Styles */
+[dir="rtl"] .text-left { text-align: right; }
+[dir="rtl"] .text-right { text-align: left; }
+[dir="rtl"] .mr-auto { margin-right: 0; margin-left: auto; }
+[dir="rtl"] .ml-auto { margin-left: 0; margin-right: auto; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-600 rounded-md;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Header Animation Effects */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header Enhancements */
+header {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+header .group:hover {
+  animation: float 2s ease-in-out infinite;
+}
+
+/* Notification Badge Animation */
+.notification-badge {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* Glass Effect for Cards */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Gradient Text Effect */
+.gradient-text {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Page Transition Effects */
+.page-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Hover Effects for Cards */
+.card-hover {
+  @apply hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Enhancements */
+.btn-primary {
+  @apply bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-white;
+}
+
+/* Loading Animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+  .mobile-optimized {
+    padding: 1rem;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  header {
+    background: white !important;
+    color: black !important;
+  }
+  
+  .glass-effect {
+    background: white !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* تحسين الـ focus للوضع المظلم */
+.focus\:ring-blue-500:focus {
+  @apply ring-blue-500 dark:ring-blue-400;
+}
+
+.gradient-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-bg-dark {
+  background: linear-gradient(135deg, #4c63d2 0%, #5a4fcf 100%);
+}
+
+/* تحسين النصوص */
+.text-primary {
+  @apply text-gray-900 dark:text-white;
+}
+
+.text-secondary {
+  @apply text-gray-600 dark:text-gray-300;
+}
+
+.text-muted {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+/* تحسين الحدود */
+.border-default {
+  @apply border-gray-200 dark:border-gray-700;
+}
+
+/* تحسين الخلفيات */
+.bg-card {
+  @apply bg-white dark:bg-gray-800;
+}
+
+.bg-surface {
+  @apply bg-gray-50 dark:bg-gray-900;
+}
+
+/* تحسين الظلال */
+.shadow-card {
+  @apply shadow-sm dark:shadow-lg;
+}
+
+/* تحسين الـ animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* تحسين الـ loading states */
+.loading-skeleton {
+  @apply bg-gray-200 dark:bg-gray-700 animate-pulse rounded;
+}
+
+/* تحسين الـ notifications */
+.notification-success {
+  @apply bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200;
+}
+
+.notification-warning {
+  @apply bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200;
+}
+
+.notification-error {
+  @apply bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200;
+}
+
+.notification-info {
+  @apply bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200;
+}
+
+/* تحسين الـ forms */
+.form-input {
+  @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+         focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 
+         focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+         placeholder-gray-500 dark:placeholder-gray-400;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2;
+}
+
+/* تحسين الـ tables */
+.table-header {
+  @apply bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300;
+}
+
+.table-row {
+  @apply bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800;
+}
+
+.table-cell {
+  @apply px-6 py-4 text-sm text-gray-900 dark:text-white;
+}
+
+/* تحسين الـ modals */
+.modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-50;
+}
+
+.modal-content {
+  @apply bg-white dark:bg-gray-800 rounded-lg shadow-xl;
+}
+
+/* تحسين الـ dropdowns */
+.dropdown-menu {
+  @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 
+         shadow-lg rounded-md py-1 z-50;
+}
+
+.dropdown-item {
+  @apply px-4 py-2 text-sm text-gray-700 dark:text-gray-300 
+         hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer;
+}
+
+/* تحسين الـ badges */
+.badge {
+  @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.badge-success {
+  @apply bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300;
+}
+
+.badge-warning {
+  @apply bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300;
+}
+
+.badge-error {
+  @apply bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300;
+}
+
+.badge-info {
+  @apply bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300;
+}
+
+/* تحسين الـ progress bars */
+.progress-bar {
+  @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2;
+}
+
+.progress-fill {
+  @apply bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300;
+}
+
+/* تحسين الـ tooltips */
+.tooltip {
+  @apply absolute z-50 px-2 py-1 text-xs text-white bg-gray-900 dark:bg-gray-700 
+         rounded shadow-lg pointer-events-none;
+}
+
+/* تحسين الـ responsive design */
+@media (max-width: 640px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-full {
+    width: 100%;
+  }
+}
+
+/* تحسين الطباعة */
+@media print {
+  .print-hidden {
+    display: none !important;
+  }
+  
+  .print-visible {
+    display: block !important;
+  }
+} 

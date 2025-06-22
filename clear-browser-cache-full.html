@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تنظيف الكاش - HR System</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.2em;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: right;
+            line-height: 1.8;
+        }
+        .step {
+            margin: 15px 0;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            border-right: 4px solid #2196F3;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 تنظيف الكاش الكامل</h1>
+        
+        <div class="instructions">
+            <h2>طرق تنظيف البيانات:</h2>
+            
+            <div class="step">
+                <strong>الطريقة الأولى - تلقائية:</strong><br>
+                اضغط على الزر أدناه لمسح جميع البيانات تلقائياً
+            </div>
+            
+            <div class="step">
+                <strong>الطريقة الثانية - يدوية:</strong><br>
+                1. اضغط F12 لفتح أدوات المطور<br>
+                2. اذهب إلى تبويب Console<br>
+                3. اكتب الأمر التالي واضغط Enter:<br>
+                <code style="background: #333; color: #fff; padding: 5px;">localStorage.clear(); sessionStorage.clear(); location.reload();</code>
+            </div>
+            
+            <div class="step">
+                <strong>الطريقة الثالثة - متصفح Chrome:</strong><br>
+                1. اضغط Ctrl+Shift+Delete<br>
+                2. اختر "All time" في الفترة الزمنية<br>
+                3. تأكد من تحديد جميع الخيارات<br>
+                4. اضغط "Clear data"
+            </div>
+        </div>
+
+        <button onclick="clearAllData()">🚀 امسح جميع البيانات الآن</button>
+        <button onclick="clearStorageOnly()">📝 امسح التخزين المحلي فقط</button>
+        <button onclick="goToSystem()">🏠 اذهب إلى النظام</button>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.innerHTML = message;
+        }
+
+        function clearAllData() {
+            try {
+                // Clear localStorage
+                localStorage.clear();
+                console.log('✅ localStorage cleared');
+                
+                // Clear sessionStorage
+                sessionStorage.clear();
+                console.log('✅ sessionStorage cleared');
+                
+                // Clear cookies for current domain
+                document.cookie.split(";").forEach(function(c) { 
+                    document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+                });
+                console.log('✅ Cookies cleared');
+                
+                // Clear IndexedDB if available
+                if ('indexedDB' in window) {
+                    indexedDB.databases().then(databases => {
+                        databases.forEach(db => {
+                            indexedDB.deleteDatabase(db.name);
+                        });
+                    }).catch(e => console.log('IndexedDB clear failed:', e));
+                }
+                
+                showStatus('✅ تم مسح جميع البيانات بنجاح! سيتم إعادة تحميل الصفحة...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'http://localhost:3000';
+                }, 2000);
+                
+            } catch (error) {
+                showStatus('❌ حدث خطأ: ' + error.message, 'warning');
+                console.error('Error clearing data:', error);
+            }
+        }
+
+        function clearStorageOnly() {
+            try {
+                localStorage.clear();
+                sessionStorage.clear();
+                showStatus('✅ تم مسح التخزين المحلي بنجاح!', 'success');
+            } catch (error) {
+                showStatus('❌ حدث خطأ: ' + error.message, 'warning');
+            }
+        }
+
+        function goToSystem() {
+            window.location.href = 'http://localhost:3000';
+        }
+
+        // Auto-clear on page load if requested
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auto') === 'true') {
+            clearAllData();
+        }
+    </script>
+</body>
+</html> 

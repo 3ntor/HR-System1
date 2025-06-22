@@ -1,0 +1,86 @@
+{
+  "capture": {
+    "enabled": true,
+    "interval": 300000,
+    "quality": 0.8,
+    "maxWidth": 1920,
+    "maxHeight": 1080,
+    "format": "png",
+    "captureWhen": {
+      "working": true,
+      "onBreak": false,
+      "paused": false,
+      "idle": false
+    },
+    "smartCapture": {
+      "enabled": true,
+      "highActivityInterval": 180000,
+      "lowActivityInterval": 600000,
+      "productivityThreshold": 80
+    },
+    "timerOptions": {
+      "comment": "اختر من الخيارات التالية أو أدخل قيمة مخصصة بالثواني",
+      "presets": {
+        "very_fast": {
+          "name": "سريع جداً - كل دقيقة",
+          "interval": 60000,
+          "description": "مراقبة مكثفة للغاية"
+        },
+        "fast": {
+          "name": "سريع - كل دقيقتين",
+          "interval": 120000,
+          "description": "مراقبة مكثفة"
+        },
+        "normal": {
+          "name": "عادي - كل 3 دقائق",
+          "interval": 180000,
+          "description": "توازن جيد بين المراقبة والأداء"
+        },
+        "medium": {
+          "name": "متوسط - كل 5 دقائق",
+          "interval": 300000,
+          "description": "الإعداد الافتراضي الموصى به"
+        },
+        "slow": {
+          "name": "بطيء - كل 10 دقائق",
+          "interval": 600000,
+          "description": "مراقبة خفيفة"
+        },
+        "very_slow": {
+          "name": "بطيء جداً - كل 15 دقيقة",
+          "interval": 900000,
+          "description": "أقل تأثير على الأداء"
+        }
+      },
+      "currentPreset": "custom",
+      "customInterval": 90000,
+      "useCustom": true
+    }
+  },
+  "storage": {
+    "maxFiles": 50,
+    "maxFileSize": 5242880,
+    "cleanupOldFiles": true,
+    "retentionDays": 30,
+    "compression": {
+      "enabled": true,
+      "quality": 0.7,
+      "maxWidth": 1280,
+      "maxHeight": 720
+    }
+  },
+  "privacy": {
+    "blurPersonalInfo": true,
+    "excludePrivateApps": true,
+    "watermark": {
+      "enabled": true,
+      "text": "HR System - Confidential",
+      "position": "bottom-right"
+    }
+  },
+  "performance": {
+    "cpuThreshold": 80,
+    "memoryThreshold": 80,
+    "diskSpaceThreshold": 500
+  }
+}

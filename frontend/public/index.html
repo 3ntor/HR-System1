@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="نظام إدارة مالية الموظفين المصري - نظام متكامل لإدارة المصروفات والإيرادات والرواتب بالجنيه المصري"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    
+    <!-- Google Fonts - Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- تطبيق الثيم فوراً لمنع الوميض -->
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          
+          if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {
+          console.warn('خطأ في تطبيق الثيم:', e);
+        }
+      })();
+    </script>
+    
+    <title>نظام إدارة مالية الموظفين المصري 🇪🇬</title>
+  </head>
+  <body class="font-cairo">
+    <noscript>يجب تفعيل JavaScript لتشغيل هذا التطبيق.</noscript>
+    <div id="root"></div>
+    
+    <!-- إضافة class loaded بعد تحميل الصفحة للتفعيل الانتقالات -->
+    <script>
+      window.addEventListener('load', function() {
+        document.documentElement.classList.add('loaded');
+      });
+    </script>
+  </body>
+</html> 

@@ -1,0 +1,122 @@
+name: Deploy to Hostinger VPS
+
+on:
+  push:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies - Backend
+      run: |
+        cd backend
+        npm install
+        
+    - name: Install dependencies - Frontend
+      run: |
+        cd frontend
+        npm install
+        
+    - name: Build Frontend
+      run: |
+        cd frontend
+        npm run build
+        
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: 109.176.199.143
+        username: admin
+        password: ${{ secrets.VPS_PASSWORD }}
+        script: |
+          # تحديث النظام
+          sudo apt update
+          
+          # تنصيب Node.js إذا لم يكن مثبت
+          if ! command -v node &> /dev/null; then
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+            sudo apt-get install -y nodejs
+          fi
+          
+          # تنصيب PM2
+          if ! command -v pm2 &> /dev/null; then
+            sudo npm install -g pm2
+          fi
+          
+          # تنصيب Nginx
+          if ! command -v nginx &> /dev/null; then
+            sudo apt install nginx -y
+            sudo systemctl enable nginx
+          fi
+          
+          # إنشاء مجلد المشروع
+          sudo mkdir -p /var/www/hr-system
+          cd /var/www/hr-system
+          
+          # حذف المحتوى القديم
+          sudo rm -rf *
+          
+          # نسخ المشروع من GitHub
+          sudo git clone https://github.com/B7rawy/HR-System.git .
+          
+          # تنصيب dependencies للباك إند
+          cd backend
+          sudo npm install --production
+          
+          # تنصيب dependencies للفرونت إند
+          cd ../frontend
+          sudo npm install
+          sudo npm run build
+          
+          # إعداد PM2 للباك إند
+          cd ../backend
+          sudo pm2 delete hr-backend || true
+          sudo pm2 start server.js --name hr-backend
+          sudo pm2 save
+          sudo pm2 startup
+          
+          # إعداد Nginx للفرونت إند
+          sudo tee /etc/nginx/sites-available/hr-system > /dev/null <<EOF
+          server {
+              listen 80;
+              server_name 109.176.199.143;
+              
+              # Frontend files
+              location / {
+                  root /var/www/hr-system/frontend/build;
+                  index index.html;
+                  try_files \$uri \$uri/ /index.html;
+              }
+              
+              # Backend API
+              location /api/ {
+                  proxy_pass http://localhost:5001/;
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade \$http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host \$host;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+                  proxy_cache_bypass \$http_upgrade;
+              }
+          }
+          EOF
+          
+          # تفعيل الموقع
+          sudo ln -sf /etc/nginx/sites-available/hr-system /etc/nginx/sites-enabled/
+          sudo rm -f /etc/nginx/sites-enabled/default
+          sudo nginx -t && sudo systemctl restart nginx
+          
+          echo "🎉 تم النشر بنجاح! الموقع متاح على http://109.176.199.143" 

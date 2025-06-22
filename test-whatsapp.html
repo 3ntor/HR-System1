@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار WhatsApp - HR System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #25D366, #128C7E);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            direction: rtl;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .whatsapp-logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #128C7E;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .status.connecting {
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEAA7;
+        }
+
+        .status.connected {
+            background: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+
+        .status.error {
+            background: #F8D7DA;
+            color: #721C24;
+            border: 1px solid #F5C6CB;
+        }
+
+        .qr-container {
+            margin: 20px 0;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+
+        .qr-code {
+            max-width: 300px;
+            width: 100%;
+            height: auto;
+            margin: 10px 0;
+        }
+
+        .btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #128C7E;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .info {
+            margin: 20px 0;
+            padding: 15px;
+            background: #E7F3FF;
+            border-radius: 10px;
+            color: #0C5460;
+            border-right: 4px solid #25D366;
+        }
+
+        .logs {
+            text-align: right;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+        }
+
+        .log-info { color: #0066cc; }
+        .log-success { color: #009900; }
+        .log-error { color: #cc0000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="whatsapp-logo">📱</div>
+        <h1>اختبار نظام WhatsApp</h1>
+        
+        <div id="status" class="status">
+            <span id="statusText">غير متصل</span>
+        </div>
+
+        <div class="qr-container">
+            <div id="qrSection" style="display: none;">
+                <h3>امسح رمز QR بهاتفك</h3>
+                <img id="qrImage" class="qr-code" alt="QR Code" />
+                <p>افتح WhatsApp → الإعدادات → الأجهزة المرتبطة → ربط جهاز</p>
+            </div>
+            <div id="noQr">
+                <p>لا يوجد رمز QR حالياً</p>
+                <p>اضغط "اتصال" لبدء العملية</p>
+            </div>
+        </div>
+
+        <button id="connectBtn" class="btn" onclick="connect()">🔗 اتصال</button>
+        <button id="disconnectBtn" class="btn" onclick="disconnect()" style="display: none;">🔌 قطع الاتصال</button>
+        <button id="refreshBtn" class="btn" onclick="refreshStatus()">🔄 تحديث</button>
+
+        <div class="info">
+            <strong>تعليمات:</strong><br>
+            1. اضغط على "اتصال" لبدء الاتصال<br>
+            2. امسح رمز QR بتطبيق WhatsApp في هاتفك<br>
+            3. انتظر رسالة "متصل" للتأكيد<br>
+            4. ابدأ في استخدام النظام!
+        </div>
+
+        <div id="logs" class="logs"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5001/api/whatsapp';
+        let statusInterval;
+        let qrInterval;
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const time = new Date().toLocaleTimeString('ar-SA');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${time}] ${message}`;
+            logs.appendChild(entry);
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        async function apiCall(endpoint, options = {}) {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        async function updateStatus() {
+            try {
+                const result = await apiCall('/status');
+                const statusEl = document.getElementById('status');
+                const statusTextEl = document.getElementById('statusText');
+                
+                if (result.success) {
+                    const status = result.status;
+                    statusEl.className = `status ${status}`;
+                    
+                    switch (status) {
+                        case 'connected':
+                            statusTextEl.textContent = `✅ متصل - ${result.authInfo?.name || 'مستخدم'}`;
+                            document.getElementById('connectBtn').style.display = 'none';
+                            document.getElementById('disconnectBtn').style.display = 'inline-block';
+                            hideQR();
+                            break;
+                        case 'connecting':
+                            statusTextEl.textContent = '🔄 جاري الاتصال...';
+                            document.getElementById('connectBtn').style.display = 'none';
+                            document.getElementById('disconnectBtn').style.display = 'none';
+                            await checkQR();
+                            break;
+                        default:
+                            statusTextEl.textContent = '❌ غير متصل';
+                            document.getElementById('connectBtn').style.display = 'inline-block';
+                            document.getElementById('disconnectBtn').style.display = 'none';
+                            hideQR();
+                    }
+                }
+            } catch (error) {
+                log('خطأ في جلب الحالة: ' + error.message, 'error');
+            }
+        }
+
+        async function checkQR() {
+            try {
+                const result = await apiCall('/qr-code');
+                if (result.success && result.qrCode) {
+                    showQR(result.qrCode);
+                    log('تم توليد رمز QR بنجاح', 'success');
+                } else {
+                    log('انتظار توليد رمز QR...', 'info');
+                }
+            } catch (error) {
+                console.log('QR not ready yet');
+            }
+        }
+
+        function showQR(qrCode) {
+            document.getElementById('qrSection').style.display = 'block';
+            document.getElementById('noQr').style.display = 'none';
+            document.getElementById('qrImage').src = qrCode;
+        }
+
+        function hideQR() {
+            document.getElementById('qrSection').style.display = 'none';
+            document.getElementById('noQr').style.display = 'block';
+        }
+
+        async function connect() {
+            log('بدء عملية الاتصال...', 'info');
+            try {
+                const result = await apiCall('/initialize', { method: 'POST' });
+                if (result.success) {
+                    log('تم بدء الاتصال بنجاح', 'success');
+                    document.getElementById('statusText').textContent = '🔄 جاري الاتصال...';
+                    
+                    // Start checking for QR code
+                    qrInterval = setInterval(checkQR, 2000);
+                    
+                    // Stop checking after 30 seconds
+                    setTimeout(() => {
+                        if (qrInterval) {
+                            clearInterval(qrInterval);
+                            qrInterval = null;
+                        }
+                    }, 30000);
+                } else {
+                    log('فشل في بدء الاتصال: ' + result.message, 'error');
+                }
+            } catch (error) {
+                log('خطأ في الاتصال: ' + error.message, 'error');
+            }
+        }
+
+        async function disconnect() {
+            log('قطع الاتصال...', 'info');
+            try {
+                const result = await apiCall('/disconnect', { method: 'POST' });
+                if (result.success) {
+                    log('تم قطع الاتصال بنجاح', 'success');
+                    hideQR();
+                } else {
+                    log('فشل في قطع الاتصال: ' + result.message, 'error');
+                }
+            } catch (error) {
+                log('خطأ في قطع الاتصال: ' + error.message, 'error');
+            }
+        }
+
+        function refreshStatus() {
+            log('تحديث الحالة...', 'info');
+            updateStatus();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            log('تم تشغيل صفحة اختبار WhatsApp', 'info');
+            updateStatus();
+            
+            // Update status every 5 seconds
+            statusInterval = setInterval(updateStatus, 5000);
+        });
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (statusInterval) clearInterval(statusInterval);
+            if (qrInterval) clearInterval(qrInterval);
+        });
+    </script>
+</body>
+</html> 
