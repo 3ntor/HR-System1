@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     // تأكد من وجود MONGODB_URI أو استخدم القيمة الافتراضية
-    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://Anter:ahmed123@anter.1cdaq.mongodb.net/?retryWrites=true&w=majority&appName=Anter';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://hrsystem:KUv0eSeiMJbXRNsl@hr-system.veyoe3q.mongodb.net/hr-system?retryWrites=true&w=majority&appName=HR-System';
     console.log('🔗 محاولة الاتصال بـ MongoDB Atlas...');
     const conn = await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
